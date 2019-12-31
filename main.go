@@ -40,7 +40,7 @@ func main() {
 				break
 			}
 
-			if msg == "bang" {
+			if msg == "bang\n" {
 				ch <- true
 			}
 		}
