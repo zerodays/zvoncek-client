@@ -4,8 +4,14 @@ import (
 	"bufio"
 	"github.com/stianeikeland/go-rpio/v4"
 	"log"
-	"os"
+	"net"
 	"time"
+)
+
+const (
+	address string = "51.77.83.245:69"
+	pin     int    = 3
+	sleep   int    = 50
 )
 
 func main() {
@@ -16,15 +22,38 @@ func main() {
 
 	defer rpio.Close()
 
-	pin := rpio.Pin(27) // Perhaps this is not the write pin number
+	pin := rpio.Pin(pin) // Perhaps this is not the write pin number
 	pin.Output()
-	pin.Low()
+	ch := make(chan bool, 1000)
+	go bang(pin, ch)
 
-	reader := bufio.NewReader(os.Stdin)
 	for {
-		_, _ = reader.ReadString('\n')
-		pin.High()
-		time.Sleep(50 * time.Millisecond)
-		pin.Low()
+		conn, _ := net.Dial("tcp", address)
+		for {
+			msg, err := bufio.NewReader(conn).ReadString('\n')
+			if err != nil {
+				log.Println(err)
+				break
+			}
+
+			if msg == "bang" {
+				ch <- true
+			}
+		}
+	}
+}
+
+func bang(pin rpio.Pin, ch chan bool) {
+	for {
+		shouldBang, ok := <-ch
+		if !ok {
+			break
+		}
+
+		if shouldBang {
+			pin.Low()
+			time.Sleep(time.Duration(sleep) * time.Millisecond)
+			pin.High()
+		}
 	}
 }
