@@ -12,7 +12,7 @@ const (
 	address       string = "51.77.83.245:8069"
 	pin           int    = 3
 	sleepExtended int    = 100
-	sleepBetween  int    = 1000
+	sleepBetween  int    = 3000
 )
 
 func main() {
