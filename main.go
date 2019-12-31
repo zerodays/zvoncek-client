@@ -28,7 +28,11 @@ func main() {
 	go bang(pin, ch)
 
 	for {
-		conn, _ := net.Dial("tcp", address)
+		conn, err := net.Dial("tcp", address)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		for {
 			msg, err := bufio.NewReader(conn).ReadString('\n')
 			if err != nil {
@@ -40,6 +44,7 @@ func main() {
 				ch <- true
 			}
 		}
+		_ = conn.Close()
 	}
 }
 
