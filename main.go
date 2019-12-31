@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	address string = "51.77.83.245:69"
+	address string = "51.77.83.245:8069"
 	pin     int    = 3
 	sleep   int    = 50
 )
