@@ -9,9 +9,10 @@ import (
 )
 
 const (
-	address string = "51.77.83.245:8069"
-	pin     int    = 3
-	sleep   int    = 50
+	address       string = "51.77.83.245:8069"
+	pin           int    = 3
+	sleepExtended int    = 100
+	sleepBetween  int    = 1000
 )
 
 func main() {
@@ -24,6 +25,8 @@ func main() {
 
 	pin := rpio.Pin(pin) // Perhaps this is not the write pin number
 	pin.Output()
+	pin.High()
+
 	ch := make(chan bool, 1000)
 	go bang(pin, ch)
 
@@ -57,8 +60,10 @@ func bang(pin rpio.Pin, ch chan bool) {
 
 		if shouldBang {
 			pin.Low()
-			time.Sleep(time.Duration(sleep) * time.Millisecond)
+			time.Sleep(time.Duration(sleepExtended) * time.Millisecond)
 			pin.High()
+
+			time.Sleep(time.Duration(sleepBetween) * time.Millisecond)
 		}
 	}
 }
